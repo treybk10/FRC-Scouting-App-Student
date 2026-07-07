@@ -23,7 +23,7 @@ st.image(MetalMuscleLogo)
 
 st.page_link("MatchScout.py", label="Stand Scouting")
 st.page_link("pages/CurrentRankings.py", label="Current Rankings")
-st.page_link("pages/Statbotics.py", label="Statbotics")
+st.page_link("pages/Statbotics.py", label="Statbotics") 
 
 event_key = st.text_input("Event Key: ", value="2026misal")
 
