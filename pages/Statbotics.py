@@ -22,7 +22,7 @@ st.image(MetalMuscleLogo)
 st.badge("Statbotics server is currently down! Some features may not work!", color="red")
 
 st.page_link("pages/CurrentRankings.py", label="Current Rankings")
-st.page_link("pages/StandScouting.py", label="Stand Scouting")
+st.page_link("MatchScout.py", label="Stand Scouting")
 st.page_link("pages/Statbotics.py", label="Statbotics")
 
 event_key = st.text_input("Event Key: ", value="2026misal")
