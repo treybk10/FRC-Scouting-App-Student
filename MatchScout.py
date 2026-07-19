@@ -34,11 +34,11 @@ submit_match = False
 BASE_DIR = os.path.dirname(__file__)
 
 st.set_page_config(page_title="Metal Muscle Scouting", layout="centered")
-MetalMuscleLogo = os.path.join(BASE_DIR, "More Files", "1506-logo.jpg")
+MetalMuscleLogo = os.path.join(BASE_DIR, "Other Files", "1506-logo.jpg")
 
 st.image(MetalMuscleLogo)
 
-st.page_link("pages/StandScouting.py", label="Stand Scouting")
+st.page_link("MatchScout.py", label="Match Scouting")
 st.page_link("pages/CurrentRankings.py", label="Current Rankings")
 st.page_link("pages/Statbotics.py", label="Statbotics")
 
@@ -246,12 +246,12 @@ if RedPrediction is not None and BluePrediction is not None:
 
             col1_3, col2_3 = st.columns(2)
             with col1_3:
-                st.error("Red Prediction Error Margin: ")
+                st.error("Red Prediction Score: ")
                 st.subheader(f"{redErrorOff}%")
             with col2_3:
-                st.info("Blue Prediction Error Margin: ")
+                st.info("Blue Prediction Score: ")
                 st.subheader(f"{blueErrorOff}%")
                 
             percentageOff = (redErrorOff + blueErrorOff) / 2
-            st.warning("Average Strategy Deviation (Lower Is Better): ")
+            st.warning("Total Score (Lower Is Better): ")
             st.title(f"{percentageOff}%")
