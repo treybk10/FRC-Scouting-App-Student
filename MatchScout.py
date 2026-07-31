@@ -57,7 +57,7 @@ st.page_link("pages/Statbotics.py", label="Statbotics")
 selectedAlliance = st.title("FRC Scouting Master")
 st.subheader("Scout Matches!")
 
-Entered_Match_Key = st.text_input("Please enter event key: ", value="2026micmp1")
+Entered_Match_Key = st.text_input("Please enter event key: ", value="2026miwrc")
 qualMatch = st.text_input("Please enter match number:")
 allianceOptions = ["Red", "Blue"]
 
@@ -91,6 +91,8 @@ if st.button("Find Teams"):
             st.session_state.blue_teams = [team.replace("frc", "") for team in alliances.get("blue", {}).get("team_keys", [])]
             st.session_state.all_teams = [team.replace("frc", "") for team in alliances.get("red", {}).get("team_keys", [])] + [team.replace("frc", "") for team in alliances.get("blue", {}).get("team_keys", [])]
             st.session_state.found_teams = True
+    else:
+        st.warning("No matches found. Could be event key, wrong qual number, or schedule isn't released yet.")
 
 if st.session_state.found_teams:
     col1, col2 = st.columns(2)
@@ -117,7 +119,7 @@ if st.session_state.selected_team_state:
 
     st.divider()
     st.subheader("Auto!")
-    starting_auto = st.multiselect("Select auto starting location: ", auto_starting, max_selections=2)
+    starting_auto = st.multiselect("Select auto starting location: ", auto_starting, max_selections=1)
     if "Center" in starting_auto:
         center_shoot = st.toggle("Scored any fuel?")
         center_intake = st.toggle("Intaked other fuel besides preload?")
@@ -134,7 +136,7 @@ if st.session_state.selected_team_state:
 
     robo_scored = st.toggle("Did robot score fuel?", value=True)
     if robo_scored == True:
-        robo_shooter_type = st.multiselect("Shooter type: ", shooter_types, max_selections=2)
+        robo_shooter_type = st.multiselect("Shooter type: ", shooter_types, max_selections=1)
         robo_hopper_size = st.select_slider("Hopper capacity: ", ["Small (<30)", "Medium (31-60)", "Large (>61)"], value="Medium (31-60)")
         robo_accuracy = st.slider("Robot accuracy: ", min_value=1, max_value=100, value=80)
         robo_cycle_time = st.select_slider("Robot cycle time: ", ["Extremely Slow", "Below Average", "Average", "Above Average", "Super Fast"], value="Average")
@@ -147,7 +149,7 @@ if st.session_state.selected_team_state:
 
     robo_driving = st.select_slider("How fluid is their driving?", ["Not real sure what they're doing", "Mechanical failure that hinders drive performance", "Could be better", "Average", "Above Average", "Couldn't be better"], value="Average")
 
-    robo_intake = st.multiselect("How do they intake?", ["Floor", "Outpost/Human Player", "Both"], max_selections=2)
+    robo_intake = st.multiselect("How do they intake?", ["Floor", "Outpost/Human Player", "Both"], max_selections=1)
     if "Floor" in robo_intake:
         robo_intake_rating = st.select_slider("How's the intake?", ["There's an intake?", "Jammed several times", "Average", "Above Average", "Awesome!"], value="Average")
     if "Floor" not in robo_intake:
