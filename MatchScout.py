@@ -92,7 +92,7 @@ if st.button("Find Teams"):
             st.session_state.all_teams = [team.replace("frc", "") for team in alliances.get("red", {}).get("team_keys", [])] + [team.replace("frc", "") for team in alliances.get("blue", {}).get("team_keys", [])]
             st.session_state.found_teams = True
     else:
-        st.warning("No matches found. Could be event key, wrong qual number, or schedule isn't released yet.")
+        st.error("No matches found. Could be event key, wrong qual number, or schedule isn't released yet.")
 
 if st.session_state.found_teams:
     col1, col2 = st.columns(2)
@@ -265,6 +265,7 @@ if st.session_state.all_scouting_data:
     #st.subheader(f"Currently Collected Matches ({len(st.session_state.all_scouting_data)})")
     
     downloadable_data = pd.DataFrame(st.session_state.all_scouting_data)
+    st.info("Current Data:")
     st.dataframe(downloadable_data)
 
     convert_data = downloadable_data.to_csv(index=False, header=False).encode('utf-8')
@@ -276,7 +277,7 @@ if st.session_state.all_scouting_data:
         mime="text/csv"
     )
 else:
-    st.info("No matches have been saved in this cache session yet.")
+    st.info("No matches have been saved yet.")
 
 if RedPrediction is not None and BluePrediction is not None:
     if RedPrediction > 0 and BluePrediction > 0:
