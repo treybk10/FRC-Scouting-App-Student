@@ -92,7 +92,7 @@ Entered_Match_Key = st.text_input("Please enter event key: ", value="2026miwrc")
 scouter_name = st.text_input("Scouter's name:")
 
 enter_predictions = st.toggle("Would you like to enter match predictions? (Optional)", value=True)
-st.warning("Match predictions are in beta and is just for fun. You can enter your score predictions and see how well you did at the end. ")
+st.warning("Match predictions are in beta and is just for fun. You can enter your score predictions and see how well you did at the end. This defaults to off.")
 
 qualMatch = st.number_input("Please enter match number:", step=1, min_value=1)
 #intQualMatch = int(qualMatch)
