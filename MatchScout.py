@@ -39,6 +39,8 @@ if "red_prediction" not in st.session_state:
     st.session_state.red_prediction = None
 if "blue_prediction" not in st.session_state:
     st.session_state.blue_prediction = None
+if "display_predictions" not in st.session_state:
+    st.session_state.display_predictions = False
 
 TBA_API_KEY = st.secrets["TBA_KEY"]
 
@@ -91,7 +93,7 @@ Entered_Match_Key = st.text_input("Please enter event key: ", value="2026miwrc")
 
 scouter_name = st.text_input("Scouter's name:")
 
-enter_predictions = st.toggle("Would you like to enter match predictions? (Optional)", value=False)
+st.session_state.display_predictions = st.toggle("Would you like to enter match predictions? (Optional)", value=False)
 st.warning("Match predictions are in beta and is just for fun. You can enter your score predictions and see how well you did at the end. This defaults to off.")
 
 qualMatch = st.number_input("Please enter match number:", step=1, min_value=1)
@@ -144,7 +146,7 @@ if st.session_state.found_teams:
         for teams in st.session_state.blue_teams:
             st.write(teams)
 
-    if enter_predictions:
+    if st.session_state.display_predictions:
         with col1:
             RedPrediction = st.number_input("Red Predicted Score", step=1, min_value=0)
         with col2:
@@ -351,7 +353,7 @@ if st.session_state.selected_team_state and st.session_state.predictions_entered
             if st.expander("See error code:"):
                 st.write(e)
 
-if st.session_state.submit_match:
+if st.session_state.submit_match and st.session_state.display_predictions is True:
     if RedPrediction == 0 or BluePrediction == 0:
         st.error("Can't enter 0 for predected score. Prediction won't work this match. Please try again ")
     elif st.session_state.red_prediction is not None and st.session_state.blue_prediction is not None:
