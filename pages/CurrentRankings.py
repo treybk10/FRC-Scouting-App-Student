@@ -80,4 +80,4 @@ if st.button("Load Rankings"):
     except Exception as e:
         print(f"\nAn error occurred: {e}")
         #st.text(f"\nAn error has occurred. {e}")
-        st.error(f"Well that's strange, error: {e} has occured. Please check event key as that is the main source of this error.")
+        st.error(f"Well that's strange, error "{e}" has occured. Please check event key as that is the main source of this error.")
