@@ -341,7 +341,7 @@ if st.session_state.selected_team_state and st.session_state.predictions_entered
     if st.button("Upload Match"):
 
         try:
-            worksheet.append_row(rawMatchData)
+            worksheet.append_row(rawMatchData, table_range="A1")
             st.balloons()
             qualMatch += 1
             st.session_state.found_teams = False
