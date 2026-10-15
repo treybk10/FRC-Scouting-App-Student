@@ -211,7 +211,7 @@ if st.session_state.selected_team_state and st.session_state.predictions_entered
 
     #robo_driving = st.select_slider("How fluid is their driving?", ["Not real sure what they're doing", "Mechanical failure that hinders drive performance", "Could be better", "Average", "Above Average", "Couldn't be better"], value="Average")
 
-    robo_intake = st.multiselect("How do they intake?", ["Floor", "Outpost/Human Player", "Both"], max_selections=1)
+    robo_intake = st.multiselect("How do they intake?", ["Floor", "Outpost/Human Player"])
     if "Outpost/Human Player" not in robo_intake:
         robo_intake_rating = st.select_slider("How's the intake?", ["There's an intake?", "Jammed several times", "Average", "Above Average", "Awesome!"], value="Average")
     if "Outpost/Human Player" in robo_intake:
@@ -350,8 +350,8 @@ if st.session_state.selected_team_state and st.session_state.predictions_entered
             st.session_state.submit_match = True
         except Exception as e:
             st.error("Failed to upload match")
-            if st.expander("See error code:"):
-                st.write(e)
+            # if st.expander("See error code:"):
+            #     st.write(e)
 
 if st.session_state.submit_match and st.session_state.display_predictions is True:
     if RedPrediction == 0 or BluePrediction == 0:
