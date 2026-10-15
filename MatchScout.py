@@ -91,7 +91,7 @@ Entered_Match_Key = st.text_input("Please enter event key: ", value="2026miwrc")
 
 scouter_name = st.text_input("Scouter's name:")
 
-enter_predictions = st.toggle("Would you like to enter match predictions? (Optional)", value=True)
+enter_predictions = st.toggle("Would you like to enter match predictions? (Optional)", value=False)
 st.warning("Match predictions are in beta and is just for fun. You can enter your score predictions and see how well you did at the end. This defaults to off.")
 
 qualMatch = st.number_input("Please enter match number:", step=1, min_value=1)
@@ -149,6 +149,7 @@ if st.session_state.found_teams:
             RedPrediction = st.number_input("Red Predicted Score", step=1, min_value=0)
         with col2:
             BluePrediction = st.number_input("Blue Predicted Score", step=1, min_value=0)
+        st.info("You will need to submit predictions to continue. (Values MUST be above 0)")
         if st.button("Submit Prediction"):
             if BluePrediction > 0 and RedPrediction > 0:
                 st.session_state.red_prediction = RedPrediction
