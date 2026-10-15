@@ -9,8 +9,8 @@ st.html(
     """
     <style>
         div[data-testid="stVerticalBlock"] > div:has(div[data-testid="stSlider"]) {
-            padding-left: 5%;
-            padding-right: 5%;
+            padding-left: 8%;
+            padding-right: 8%;
         }
     </style>
     """
@@ -31,8 +31,14 @@ if "all_teams" not in st.session_state:
     st.session_state.all_teams = []
 if "all_scouting_data" not in st.session_state:
     st.session_state.all_scouting_data = []
-if "save_locked" not in st.session_state:
-    st.session_state.save_locked = False
+if "submit_match" not in st.session_state:
+    st.session_state.submit_match = False
+if "predictions_entered" not in st.session_state:
+    st.session_state.predictions_entered = False
+if "red_prediction" not in st.session_state:
+    st.session_state.red_prediction = None
+if "blue_prediction" not in st.session_state:
+    st.session_state.blue_prediction = None
 
 TBA_API_KEY = st.secrets["TBA_KEY"]
 
@@ -40,7 +46,7 @@ headers = {
     "X-TBA-Auth-Key": TBA_API_KEY
 }
 
-submit_match = False
+
 
 secrets_info = st.secrets["connections"]["gsheets"]
 creds_dict = {
@@ -69,7 +75,7 @@ worksheet = sh.get_worksheet(0)
 BASE_DIR = os.path.dirname(__file__)
 
 st.set_page_config(page_title="Metal Muscle Scouting", layout="centered")
-MetalMuscleLogo = os.path.join(BASE_DIR, "Other Files", "1506-logo.jpg")
+MetalMuscleLogo = os.path.join(BASE_DIR, "More Files", "1506-logo.jpg")
 
 st.image(MetalMuscleLogo)
 
@@ -78,22 +84,28 @@ st.page_link("pages/CurrentRankings.py", label="Current Rankings")
 st.page_link("pages/Statbotics.py", label="Statbotics")
 
 selectedAlliance = st.title("FRC Scouting Master")
-st.subheader("Scout Matches!")
+#st.subheader("Scout Matches!")
+st.info("Please know that all of this is meant to be an estimate and just provide your best guess.")
 
 Entered_Match_Key = st.text_input("Please enter event key: ", value="2026miwrc")
-qualMatch = st.text_input("Please enter match number:")
+
+scouter_name = st.text_input("Scouter's name:")
+
+enter_predictions = st.toggle("Would you like to enter match predictions? (Optional)", value=True)
+st.warning("Match predictions are in beta and is just for fun. You can enter your score predictions and see how well you did at the end. ")
+
+qualMatch = st.number_input("Please enter match number:", step=1, min_value=1)
+#intQualMatch = int(qualMatch)
 allianceOptions = ["Red", "Blue"]
 
 RedPrediction = None
 BluePrediction = None
-#selectedAlliance = st.multiselect("Please Select What Alliance The Scouted Team Is On", allianceOptions,  max_selections=1)
-#MATCH_KEY = f"2026micmp1_qm{qualMatch}"
+
 
 MATCH_KEY = f"{Entered_Match_Key}_qm{qualMatch}"
 
 url = f"https://www.thebluealliance.com/api/v3/match/{MATCH_KEY}"
 
-scouter_name = st.text_input("Scouter's name:", max_chars=20)
 
 auto_starting = ["Left", "Right", "Center"]
 shooter_types = ["Single Dumper", "Multi-Wide Dumper", "Single Turret", "Dual Turret"]
@@ -101,6 +113,8 @@ shooter_types = ["Single Dumper", "Multi-Wide Dumper", "Single Turret", "Dual Tu
 total_scouting_data = []
 
 if st.button("Find Teams"):
+    st.session_state.predictions_entered = False
+    st.session_state.submit_match = False
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
@@ -124,20 +138,42 @@ if st.session_state.found_teams:
         st.error("RED ALLIANCE")
         for teams in st.session_state.red_teams:
             st.write(teams)
-        RedPrediction = st.number_input("Red Predicted Score", step=1)
+    
     with col2:
         st.info("BLUE ALLIANCE")
         for teams in st.session_state.blue_teams:
             st.write(teams)
-        BluePrediction = st.number_input("Blue Predicted Score", step=1)
+
+    if enter_predictions:
+        with col1:
+            RedPrediction = st.number_input("Red Predicted Score", step=1, min_value=0)
+        with col2:
+            BluePrediction = st.number_input("Blue Predicted Score", step=1, min_value=0)
+        if st.button("Submit Prediction"):
+            if BluePrediction > 0 and RedPrediction > 0:
+                st.session_state.red_prediction = RedPrediction
+                st.session_state.blue_prediction = BluePrediction
+                st.session_state.predictions_entered = True
+                st.success("Predictions entered")
+            else: 
+                st.error("Predictions Are not valid. Both need to be at least 1. Please try again.")
+    else:
+        RedPrediction = None
+        BluePrediction = None
+        st.session_state.predictions_entered = True
 
     selected_team = st.multiselect("Please select team:", st.session_state.all_teams, key="selected_team_state", max_selections=1)
+
+
+    if selected_team is None:
+        if st.session_state.red_prediction is None or st.session_state.blue_prediction is None:
+            st.warning("Please enter a prediction or turn off predictions to continue.")
 
 
 # bufferLeft, middleData, bufferRight = st.columns([0.1, 0.8, 0.1])
 
 #with middleData:
-if st.session_state.selected_team_state:
+if st.session_state.selected_team_state and st.session_state.predictions_entered:
 
     st.divider()
     st.subheader("Auto!")
@@ -170,7 +206,7 @@ if st.session_state.selected_team_state:
         robo_cycle_time = "N/A"
         robo_throughput = "N/A"
 
-    robo_driving = st.select_slider("How fluid is their driving?", ["Not real sure what they're doing", "Mechanical failure that hinders drive performance", "Could be better", "Average", "Above Average", "Couldn't be better"], value="Average")
+    #robo_driving = st.select_slider("How fluid is their driving?", ["Not real sure what they're doing", "Mechanical failure that hinders drive performance", "Could be better", "Average", "Above Average", "Couldn't be better"], value="Average")
 
     robo_intake = st.multiselect("How do they intake?", ["Floor", "Outpost/Human Player", "Both"], max_selections=1)
     if "Outpost/Human Player" not in robo_intake:
@@ -185,7 +221,7 @@ if st.session_state.selected_team_state:
     robo_bump = st.toggle("Did the robot drive over the bump?", value=True)
 
     if robo_trench == True and robo_bump == True:
-        robo_prefered_travel = st.multiselect("Prefered method of travel: ", ["Trench", "Bump"])
+        robo_prefered_travel = st.multiselect("Prefered method of travel: ", ["Trench", "Bump", "Can't Tell"], max_selections=1)
     else:
         robo_prefered_travel = "Don't do both"
 
@@ -223,7 +259,7 @@ if st.session_state.selected_team_state:
 match_data_entered = None
 
 # Only build the dictionary if a team is actively selected to prevent crashes
-if st.session_state.selected_team_state:
+if st.session_state.selected_team_state and st.session_state.predictions_entered:
     # Ensure team selection handles fallback formatting for lists safely
     team_clean = st.session_state.selected_team_state[0] if isinstance(st.session_state.selected_team_state, list) and st.session_state.selected_team_state else "Unknown"
     
@@ -242,7 +278,7 @@ if st.session_state.selected_team_state:
         "Robot Accuracy": robo_accuracy,
         "Robot Throughput": robo_throughput,
         "Robot Cycle Time": robo_cycle_time,
-        "Robot Driving Rating": robo_driving,
+        #"Robot Driving Rating": robo_driving,
         "Robot Intake": robo_intake[0] if robo_intake else "Not entered",
         "Robot Intake Rating": robo_intake_rating,
         "Robot Does When Inactive": ", ".join(robo_do_when_inactive) if robo_do_when_inactive else "Not entered",
@@ -276,7 +312,7 @@ if st.session_state.selected_team_state:
         robo_accuracy,
         robo_throughput,
         robo_cycle_time,
-        robo_driving,
+        #robo_driving,
         robo_intake[0] if robo_intake else "Not entered",
         robo_intake_rating,
         ", ".join(robo_do_when_inactive) if robo_do_when_inactive else "Not entered",
@@ -296,43 +332,51 @@ if st.session_state.selected_team_state:
         robo_extra
     ]
 
-st.divider()
+    st.divider()
 
 
-if st.button("Upload Match"):
-    try:
-        worksheet.append_row(rawMatchData)
-        st.balloons()
-        st.session_state.found_teams = False
-        st.success("Saved!")
-    except Exception as e:
-        st.error("Failed to upload match")
-        if st.expander("See error code:"):
-            st.write(e)
+    if st.button("Upload Match"):
 
+        try:
+            worksheet.append_row(rawMatchData)
+            st.balloons()
+            qualMatch += 1
+            st.session_state.found_teams = False
+            st.success("Saved!")
 
-if RedPrediction is not None and BluePrediction is not None:
-    if RedPrediction > 0 and BluePrediction > 0:
-        st.subheader("Real Match Results")
-        col1_2, col2_2 = st.columns(2)
-        
-        with col1_2:
-            realRedScore = st.number_input("Real Red Score", step=1, min_value=0, value=0)
-        with col2_2:
-            realBlueScore = st.number_input("Real Blue Score", step=1, min_value=0, value=0)
+            st.session_state.submit_match = True
+        except Exception as e:
+            st.error("Failed to upload match")
+            if st.expander("See error code:"):
+                st.write(e)
+
+if st.session_state.submit_match:
+    if RedPrediction == 0 or BluePrediction == 0:
+        st.error("Can't enter 0 for predected score. Prediction won't work this match. Please try again ")
+    elif st.session_state.red_prediction is not None and st.session_state.blue_prediction is not None:
+        if st.session_state.red_prediction > 0 and st.session_state.blue_prediction > 0:
+            st.subheader("Real Match Results")
+            col1_2, col2_2 = st.columns(2)
             
-        if realRedScore > 0 and realBlueScore > 0:
-            redErrorOff = max(-100, round(100 - ((abs(realRedScore - RedPrediction) / realRedScore) * 100)))
-            blueErrorOff = max(-100, round(100 - ((abs(realBlueScore - BluePrediction) / realBlueScore) * 100)))
-
-            col1_3, col2_3 = st.columns(2)
-            with col1_3:
-                st.error("Red Prediction Score: ")
-                st.subheader(f"{redErrorOff}%")
-            with col2_3:
-                st.info("Blue Prediction Score: ")
-                st.subheader(f"{blueErrorOff}%")
+            with col1_2:
+                realRedScore = st.number_input("Real Red Score", step=1, min_value=0, value=0)
+            with col2_2:
+                realBlueScore = st.number_input("Real Blue Score", step=1, min_value=0, value=0)
                 
-            percentageOff = (redErrorOff + blueErrorOff) / 2
-            st.warning("Total Score (Higher Is Better): ")
-            st.title(f"{percentageOff}%")
+            if realRedScore > 0 and realBlueScore > 0:
+                redErrorOff = abs(max(-100, round(100 - ((abs(realRedScore - st.session_state.red_prediction) / realRedScore) * 100))))
+                blueErrorOff = abs(max(-100, round(100 - ((abs(realBlueScore - st.session_state.blue_prediction) / realBlueScore) * 100))))
+
+                col1_3, col2_3 = st.columns(2)
+                with col1_3:
+                    st.error("Red Prediction Score: ")
+                    st.subheader(f"{redErrorOff}%")
+                with col2_3:
+                    st.info("Blue Prediction Score: ")
+                    st.subheader(f"{blueErrorOff}%")
+                    
+                percentageOff = (redErrorOff + blueErrorOff) / 2
+                st.warning("Total Score (Higher Is Better): ")
+                st.title(f"{percentageOff}%")
+    else:
+        st.error("Something went wrong. Please try again next match.")
