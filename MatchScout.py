@@ -350,8 +350,8 @@ if st.session_state.selected_team_state and st.session_state.predictions_entered
             st.session_state.submit_match = True
         except Exception as e:
             st.error("Failed to upload match")
-            # if st.expander("See error code:"):
-            #     st.write(e)
+            if st.expander("See error code:"):
+                st.write(e)
 
 if st.session_state.submit_match and st.session_state.display_predictions is True:
     if RedPrediction == 0 or BluePrediction == 0:
