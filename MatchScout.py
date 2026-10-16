@@ -211,10 +211,10 @@ if st.session_state.selected_team_state and st.session_state.predictions_entered
 
     #robo_driving = st.select_slider("How fluid is their driving?", ["Not real sure what they're doing", "Mechanical failure that hinders drive performance", "Could be better", "Average", "Above Average", "Couldn't be better"], value="Average")
 
-    robo_intake = st.multiselect("How do they intake?", ["Floor", "Outpost/Human Player"])
-    if "Outpost/Human Player" not in robo_intake:
+    robo_intake = st.multiselect("How do they intake? (Can select up to 2)", ["Floor", "Outpost/Human Player"])
+    if "Floor" in robo_intake:
         robo_intake_rating = st.select_slider("How's the intake?", ["There's an intake?", "Jammed several times", "Average", "Above Average", "Awesome!"], value="Average")
-    if "Outpost/Human Player" in robo_intake:
+    if "Floor" not in robo_intake:
         robo_intake_rating = "Can't intake from floor"
 
     robo_do_when_inactive = st.multiselect("When the hub is inactive, what do they do? (Can select more that one)", ["Nothing", "Defense", "Clear opposing alliances fuel", "Pass/Collect fuel"])
@@ -288,7 +288,7 @@ if st.session_state.selected_team_state and st.session_state.predictions_entered
         "Robot Shoot On The Move": robo_sotm,
         "Robot Trench": robo_trench,
         "Robot Bump": robo_bump,
-        "Robot Prefered Travel Path": robo_prefered_travel,
+        "Robot Prefered Travel Path": robo_prefered_travel[0] if robo_prefered_travel else "Not entered",
         "Robot Played Defense": robo_play_defense,
         "Robot Defense Rating": robo_defense_effeciency,
         "Robot Had Defense": robo_had_defense,
